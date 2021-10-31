@@ -4,11 +4,33 @@ export default [
   {
     path: '/article',
     name: '文章管理',
-    component: './article/list',
     routes: [
       {
+        path: '/article',
+        redirect: '/article/list',
+        hideInMenu: true,
+      },
+      {
+        path: '/article/list',
+        name: '文章管理',
+        component: './article/list',
+        hideInMenu: true,
+      },
+      {
+        path: '/article/create',
+        name: '创建文章',
+        component: './article/update',
+        hideInMenu: true,
+      },
+      {
+        path: '/article/edit/:id',
+        name: '编辑文章',
+        component: './article/update',
+        hideInMenu: true,
+      },
+      {
         path: '/article/:id',
-        name: '文章详情',
+        name: '查看文章',
         component: './article/detail',
         hideInMenu: true,
       },

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { request } from 'umi';
+import { request, history } from 'umi';
 
 import ProTable from '@ant-design/pro-table';
 import { Button, Card, Space, Tag } from 'antd';
@@ -147,7 +147,12 @@ const ArticleListComponent = (): React.ReactNode => {
           pagination={{ pageSize: 10 }}
           dateFormatter="string"
           toolBarRender={() => [
-            <Button key="button" icon={<PlusOutlined />} type="primary">
+            <Button
+              key="button"
+              icon={<PlusOutlined />}
+              type="primary"
+              onClick={() => history.push('/article/create')}
+            >
               去写一篇新的
             </Button>,
           ]}
