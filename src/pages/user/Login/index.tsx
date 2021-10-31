@@ -13,7 +13,7 @@ import { history, useModel } from 'umi';
 import Footer from '@/components/footer';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import styles from './index.less';
+import styles from './styles/index.less';
 
 const LoginMessage: React.FC<{
   content: string;
