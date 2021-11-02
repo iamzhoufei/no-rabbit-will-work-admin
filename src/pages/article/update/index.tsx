@@ -1,35 +1,30 @@
-import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
+import React from 'react';
 
 import { useMount } from 'ahooks';
 import { Card } from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
 
 const ArticleUpdateComponent = () => {
   useMount(() => {
-    document.addEventListener('onunload', () => {
-      console.log('onunload');
+    new (window as any).Cherry({
+      id: 'markdown-container',
+      value: '# 请输入文章标题',
+      editor: {
+        height: '84vh',
+      },
     });
     // window.onunload = function () {
     //   sendVideoPlayEvent();
     //   isPlay = false;
     //   console.log('onunload');
     // };
+
+    window.onbeforeunload = () => '二次确认';
   });
 
   return (
-    <PageContainer title="" header={{ title: '' }}>
-      <div>UpdateArticleComponent</div>
-      <Card>
-        <ReactMarkdown
-          children={`Just a link: https://reactjs.com.`}
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
-        />
-      </Card>
-    </PageContainer>
+    <Card>
+      <div id="markdown-container" />
+    </Card>
   );
 };
 
