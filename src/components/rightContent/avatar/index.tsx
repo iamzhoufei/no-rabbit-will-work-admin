@@ -3,10 +3,11 @@ import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons
 import { Avatar, Menu, Spin } from 'antd';
 import { history, useModel } from 'umi';
 import { stringify } from 'querystring';
-import HeaderDropdown from '../HeaderDropdown';
-import styles from './index.less';
+import HeaderDropdown from '@/components/headerDropdown';
 import { outLogin } from '@/services/ant-design-pro/api';
 import type { MenuInfo } from 'rc-menu/lib/interface';
+
+import styles from './styles/index.less';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;

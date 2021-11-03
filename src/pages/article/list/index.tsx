@@ -43,7 +43,7 @@ const ArticleListComponent = (): React.ReactNode => {
       dataIndex: 'labels',
       align: 'center',
       width: 200,
-      renderFormItem: (_, { defaultRender }) => {
+      renderFormItem: () => {
         // return defaultRender(_);
         return (
           <ProFormSelect
@@ -63,13 +63,11 @@ const ArticleListComponent = (): React.ReactNode => {
       },
       render: (_, record) => (
         <Space>
-          {record.labels.map(
-            ({ label, value, color }: { label: string; color: string }, index: number) => (
-              <Tag color={color} key={`tag_${index}`}>
-                {label}
-              </Tag>
-            ),
-          )}
+          {record.labels.map(({ label, color }: { label: string; color: string }) => (
+            <Tag color={color} key={`tag_${label}`}>
+              {label}
+            </Tag>
+          ))}
         </Space>
       ),
     },

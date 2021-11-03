@@ -2,7 +2,7 @@ import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
-import RightContent from '@/components/RightContent';
+import RightContent from '@/components/rightContent';
 import Footer from '@/components/footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 
