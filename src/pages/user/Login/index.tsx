@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { history } from 'umi';
+import { message, Tabs } from 'antd';
 import {
   AlipayCircleOutlined,
   LockOutlined,
@@ -6,71 +9,63 @@ import {
   UserOutlined,
   WeiboCircleOutlined,
 } from '@ant-design/icons';
-import { Alert, message, Tabs } from 'antd';
-import React, { useState } from 'react';
 import { ProFormCaptcha, ProFormCheckbox, ProFormText, LoginForm } from '@ant-design/pro-form';
-import { history, useModel } from 'umi';
+
 import Footer from '@/components/footer';
-import { login } from '@/services/ant-design-pro/api';
+
+import { login } from '@/pages/user/login/services';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+
+import type { TLoginType, ILoginParams } from './interface';
+
 import styles from './styles/index.less';
 
-const LoginMessage: React.FC<{
-  content: string;
-}> = ({ content }) => (
-  <Alert
-    style={{
-      marginBottom: 24,
-    }}
-    message={content}
-    type="error"
-    showIcon
-  />
-);
+// const LoginMessage: React.FC<{
+//   content: string;
+// }> = ({ content }) => (
+//   <Alert
+//     style={{
+//       marginBottom: 24,
+//     }}
+//     message={content}
+//     type="error"
+//     showIcon
+//   />
+// );
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
-  const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
+  // const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [type, setType] = useState<TLoginType>('nickname');
+  // const { initialState, setInitialState } = useModel('@@initialState');
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-
-    if (userInfo) {
-      await setInitialState((s) => ({ ...s, currentUser: userInfo }));
-    }
-  };
-
-  const handleSubmit = async (values: API.LoginParams) => {
+  const handleSubmit = async (values: ILoginParams) => {
     try {
       // 登录
-      const msg = await login({ ...values, type });
+      const result = await login({ ...values, type });
 
-      if (msg.status === 'ok') {
+      if (result.code === 200) {
         const defaultLoginSuccessMessage = '登录成功！';
         message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
-        /** 此方法会跳转到 redirect 参数所在的位置 */
 
-        if (!history) return;
-        const { query } = history.location;
-        const { redirect } = query as {
-          redirect: string;
-        };
-        history.push(redirect || '/');
+        // if (!history) return;
+        // const { query } = history.location;
+        // const { redirect } = query as {
+        //   redirect: string;
+        // };
+        history.push('/home');
         return;
       }
 
-      console.log(msg); // 如果失败去设置用户错误信息
+      console.log(result); // 如果失败去设置用户错误信息
 
-      setUserLoginState(msg);
+      // setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = '登录失败，请重试！';
       message.error(defaultLoginFailureMessage);
     }
   };
 
-  const { status, type: loginType } = userLoginState;
+  // const { status, type: loginType } = userLoginState;
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -88,21 +83,21 @@ const Login: React.FC = () => {
             <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.icon} />,
           ]}
           onFinish={async (values) => {
-            await handleSubmit(values as API.LoginParams);
+            await handleSubmit(values as ILoginParams);
           }}
         >
-          <Tabs activeKey={type} onChange={setType}>
+          <Tabs activeKey={type} onChange={(value: any) => setType(value)}>
             <Tabs.TabPane key="account" tab={'账户密码登录'} />
             <Tabs.TabPane key="mobile" tab={'手机号登录'} />
           </Tabs>
 
-          {status === 'error' && loginType === 'account' && (
+          {/* {status === 'error' && loginType === 'account' && (
             <LoginMessage content={'错误的用户名和密码(admin/ant.design)'} />
-          )}
-          {type === 'account' && (
+          )} */}
+          {type === 'nickname' && (
             <>
               <ProFormText
-                name="username"
+                name="nickname"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined className={styles.prefixIcon} />,
@@ -132,7 +127,7 @@ const Login: React.FC = () => {
             </>
           )}
 
-          {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
+          {/* {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />} */}
           {type === 'mobile' && (
             <>
               <ProFormText
