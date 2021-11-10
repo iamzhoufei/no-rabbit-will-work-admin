@@ -8,28 +8,28 @@ import styles from './styles/index.less';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 
 const HomeComponent = (): React.ReactNode => {
-  const l2dConfig = {
-    model: {
-      jsonPath: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/kaji/hijiki.model.json', // xxx.model.json 的路径
-    },
-    display: {
-      superSample: 1, // 超采样等级
-      width: 210, // canvas的宽度
-      height: 240, // canvas的高度
-      position: 'right', // 显示位置：左或右
-      hOffset: 0, // canvas水平偏移
-      vOffset: 0, // canvas垂直偏移
-    },
-    mobile: {
-      show: true, // 是否在移动设备上显示
-      scale: 1, // 移动设备上的缩放
-      motion: true, // 移动设备是否开启重力感应
-    },
-    react: {
-      opacityDefault: 1, // 默认透明度
-      opacityOnHover: 1, // 鼠标移上透明度
-    },
-  };
+  // const l2dConfig = {
+  //   model: {
+  //     jsonPath: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/kaji/hijiki.model.json', // xxx.model.json 的路径
+  //   },
+  //   display: {
+  //     superSample: 1, // 超采样等级
+  //     width: 210, // canvas的宽度
+  //     height: 240, // canvas的高度
+  //     position: 'right', // 显示位置：左或右
+  //     hOffset: 0, // canvas水平偏移
+  //     vOffset: 0, // canvas垂直偏移
+  //   },
+  //   mobile: {
+  //     show: true, // 是否在移动设备上显示
+  //     scale: 1, // 移动设备上的缩放
+  //     motion: true, // 移动设备是否开启重力感应
+  //   },
+  //   react: {
+  //     opacityDefault: 1, // 默认透明度
+  //     opacityOnHover: 1, // 鼠标移上透明度
+  //   },
+  // };
 
   const data = [
     { month: '5月', value: 105 },
@@ -100,14 +100,8 @@ const HomeComponent = (): React.ReactNode => {
   // };
   return (
     <div>
-      <div
-        style={{
-          marginBottom: 20,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
+      <div className={styles.say}>千里之行始于足下。</div>
+      <div className={styles.overviewWrapper}>
         <Overview title="总访问量">
           <div className={styles.overviewCount}>1234</div>
           <div>
