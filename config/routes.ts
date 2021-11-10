@@ -37,6 +37,23 @@ export default [
     ],
   },
   {
+    path: '/dataCenter',
+    name: '数据中心',
+    routes: [
+      {
+        path: '/dataCenter',
+        redirect: '/dataCenter/search',
+        hideInMenu: true,
+      },
+      {
+        path: '/dataCenter/search',
+        name: '数据查询',
+        component: './dataCenter/search',
+        hideInMenu: true,
+      },
+    ],
+  },
+  {
     path: '/user',
     layout: false,
     routes: [
