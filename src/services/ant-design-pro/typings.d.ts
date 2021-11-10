@@ -2,6 +2,11 @@
 /* eslint-disable */
 
 declare namespace API {
+  interface Response {
+    data: any;
+    code: number;
+    error: any;
+  }
   type CurrentUser = {
     name?: string;
     avatar?: string;
