@@ -37,6 +37,23 @@ export default [
     ],
   },
   {
+    path: '/tag',
+    name: '标签管理',
+    routes: [
+      {
+        path: '/tag',
+        redirect: '/tag/list',
+        hideInMenu: true,
+      },
+      {
+        path: '/tag/list',
+        name: '标签管理',
+        component: './tag/list',
+        hideInMenu: true,
+      },
+    ],
+  },
+  {
     path: '/dataCenter',
     name: '数据中心',
     routes: [
@@ -57,7 +74,16 @@ export default [
     path: '/user',
     layout: false,
     routes: [
-      { path: '/user', routes: [{ name: '登录', path: '/user/login', component: './user/Login' }] },
+      {
+        path: '/user',
+        routes: [
+          {
+            path: '/user/login',
+            name: '登录',
+            component: './user/Login',
+          },
+        ],
+      },
       { component: './404' },
     ],
   },
