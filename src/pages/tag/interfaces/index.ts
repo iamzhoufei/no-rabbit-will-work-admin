@@ -6,13 +6,16 @@ export interface ITagModalProps {
 }
 
 export interface ITag {
+  id: number;
   label: string;
   value: number;
+  color: string;
   status: ETagStatus;
   bindArticles: number;
 }
 
 export enum ETagStatus {
-  '禁用中',
+  '全部' = 0,
   '启用中',
+  '禁用中',
 }

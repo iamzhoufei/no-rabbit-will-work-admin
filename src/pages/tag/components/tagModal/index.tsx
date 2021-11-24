@@ -1,10 +1,11 @@
 import { useMount } from 'ahooks';
 import { Modal, Form, Input, Button, Radio } from 'antd';
+import { TwitterPicker } from 'react-color';
+
 import type { ITagModalProps } from '../../interfaces';
 
 const TagModalComponent = (props: ITagModalProps) => {
   const [form] = Form.useForm();
-  console.log(props);
   const { visible, tag, onOk, onCancel } = props;
 
   useMount(() => {
@@ -16,8 +17,14 @@ const TagModalComponent = (props: ITagModalProps) => {
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
-    // console.log(values);
-    onOk(values);
+    console.log({
+      ...values,
+      color: values?.color?.hex,
+    });
+    onOk({
+      ...values,
+      color: values?.color?.hex,
+    });
   };
 
   return visible ? (
@@ -54,6 +61,18 @@ const TagModalComponent = (props: ITagModalProps) => {
             <Input />
           </Form.Item>
           <Form.Item
+            label="标签颜色"
+            name="color"
+            rules={[
+              {
+                required: true,
+                message: '标签颜色是必选项',
+              },
+            ]}
+          >
+            <TwitterPicker triangle="hide" />
+          </Form.Item>
+          <Form.Item
             label="标签状态"
             name="status"
             rules={[
@@ -64,8 +83,8 @@ const TagModalComponent = (props: ITagModalProps) => {
             ]}
           >
             <Radio.Group>
-              <Radio value={0}>禁用</Radio>
               <Radio value={1}>启用</Radio>
+              <Radio value={2}>禁用</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>

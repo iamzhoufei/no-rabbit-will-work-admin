@@ -2,15 +2,18 @@
 import React, { useRef, useState } from 'react';
 
 import ProTable from '@ant-design/pro-table';
-import { Button, Card, message } from 'antd';
+import { Button, Card, message, Popconfirm } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
 
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 
 import type { ITag } from '@/pages/tag/interfaces';
+import { ETagStatus } from '@/pages/tag/interfaces';
 import TagModalComponent from '../components/tagModal';
-import { createTag, getAllTag } from '../services';
+import { createTag, getAllTag, removeTag, updateTag } from '../services';
+
+import styles from './styles/index.less';
 
 const TagListPage = (): React.ReactNode => {
   const actionRef = useRef<ActionType>();
@@ -28,18 +31,27 @@ const TagListPage = (): React.ReactNode => {
     {
       title: '标签名称',
       dataIndex: 'label',
-      copyable: true,
-      ellipsis: true,
+      width: 100,
+      align: 'center',
+      render: (_text, _record, _, _action) => {
+        return (
+          <div
+            className={styles.labelWrapper}
+            style={{ border: `1px solid ${_record?.color}`, color: _record?.color }}
+          >
+            {_text}
+          </div>
+        );
+      },
+    },
+    {
+      title: '关联文章数量',
+      dataIndex: 'bindCount',
+      search: false,
       width: 100,
       align: 'center',
     },
-    {
-      title: '关联文章',
-      dataIndex: 'bindArticles',
-      search: false,
-      width: 150,
-      align: 'center',
-    },
+
     {
       title: '标签状态',
       dataIndex: 'status',
@@ -47,8 +59,9 @@ const TagListPage = (): React.ReactNode => {
       align: 'center',
       valueType: 'select',
       valueEnum: {
-        0: { text: '禁用中', status: 'Error' },
+        0: { text: '全部', status: 'Success' },
         1: { text: '启用中', status: 'Success' },
+        2: { text: '禁用中', status: 'Error' },
       },
     },
     {
@@ -57,60 +70,90 @@ const TagListPage = (): React.ReactNode => {
       align: 'center',
       width: 150,
       render: (_text, _record, _, _action) => [
-        <Button key="enabled_btn">启用</Button>,
-        <Button key="disabled_btn">禁用</Button>,
+        _record.status === ETagStatus['启用中'] ? (
+          <Button key="disabled_btn" onClick={() => handleToggleStatus(_record)}>
+            禁用
+          </Button>
+        ) : (
+          <Button key="enabled_btn" onClick={() => handleToggleStatus(_record)}>
+            启用
+          </Button>
+        ),
+        <Button key="edit_btn">编辑</Button>,
+        <Popconfirm
+          title={`确定删除「${_record?.label}」标签吗？`}
+          onConfirm={() => handleRemove(_record?.id)}
+          onCancel={() => {}}
+          okText="确定"
+          cancelText="取消"
+        >
+          <Button danger key="remove_btn">
+            删除
+          </Button>
+        </Popconfirm>,
       ],
     },
   ];
 
-  const handleCreateTag = async (values: any) => {
-    console.log(values);
-    await createTag({
-      label: values?.label,
-      status: values?.status,
-      color: 'red',
+  async function handleCreateTag(values: any) {
+    await createTag(values);
+    message.success('创建标签成功');
+    actionRef?.current?.reload();
+    setIsTagModalShow(false);
+  }
+
+  async function handleToggleStatus(_tag: ITag) {
+    await updateTag({
+      ..._tag,
+      status: _tag.status === ETagStatus['启用中'] ? ETagStatus['禁用中'] : ETagStatus['启用中'],
     });
-    message.success('创建标签成功', () => setIsTagModalShow(false));
-  };
+    message.success('更新标签状态成功');
+    actionRef?.current?.reload();
+  }
+
+  async function handleRemove(id: number) {
+    await removeTag(id);
+    actionRef?.current?.reload();
+    message.success('删除标签成功');
+  }
 
   return (
     <PageContainer>
-      <Card>
-        <ProTable<ITag>
-          bordered={true}
-          columns={columns}
-          actionRef={actionRef}
-          rowKey="id"
-          search={{ labelWidth: 'auto' }}
-          pagination={{ pageSize: 10 }}
-          dateFormatter="string"
-          toolBarRender={() => [
-            <Button
-              key="button"
-              icon={<PlusOutlined />}
-              type="primary"
-              onClick={() => setIsTagModalShow(true)}
-            >
-              创建新的标签
-            </Button>,
-          ]}
-          request={async (params) => {
-            console.log(params);
-            const result = await getAllTag({
-              pageNo: params?.current,
-              pageSize: params?.pageSize,
-              status: +params?.status,
-            });
-            const { total } = result?.data;
-            return {
-              data: result?.data,
-              success: true,
-              total, // 不传会使用 data 的长度，如果是分页一定要传
-            };
-          }}
-          postData={(data: any[]) => (data as any).list}
-        />
-      </Card>
+      <ProTable<ITag>
+        columns={columns}
+        actionRef={actionRef}
+        rowKey="id"
+        search={{ labelWidth: 'auto' }}
+        dateFormatter="string"
+        toolBarRender={() => [
+          <Button
+            key="button"
+            icon={<PlusOutlined />}
+            type="primary"
+            onClick={() => setIsTagModalShow(true)}
+          >
+            创建新的标签
+          </Button>,
+        ]}
+        request={async (params) => {
+          console.log(params);
+          const requestParams = {
+            pageNo: params?.current,
+            pageSize: params?.pageSize,
+            label: params?.label ?? '',
+            status: params?.status ?? ETagStatus['全部'],
+          };
+
+          const result = await getAllTag(requestParams);
+          const { pagination } = result?.data;
+          return {
+            data: result?.data,
+            success: true,
+            total: pagination?.total,
+          };
+        }}
+        postData={(data: any[]) => (data as any).list}
+      />
       <TagModalComponent
         tag={tag as ITag}
         visible={isTagModalShow}
