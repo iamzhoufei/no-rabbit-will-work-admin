@@ -1,6 +1,5 @@
 export interface ITagModalProps {
   tag: ITag | undefined;
-  visible: boolean;
   onOk: (values: any) => void;
   onCancel: () => void;
 }

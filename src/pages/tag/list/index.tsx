@@ -2,16 +2,18 @@
 import React, { useRef, useState } from 'react';
 
 import ProTable from '@ant-design/pro-table';
-import { Button, Card, message, Popconfirm } from 'antd';
+import { Button, message, Popconfirm } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
 
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 
+import { CodeMessage } from '@/interface';
 import type { ITag } from '@/pages/tag/interfaces';
 import { ETagStatus } from '@/pages/tag/interfaces';
-import TagModalComponent from '../components/tagModal';
 import { createTag, getAllTag, removeTag, updateTag } from '../services';
+
+import TagModalComponent from '../components/tagModal';
 
 import styles from './styles/index.less';
 
@@ -22,7 +24,7 @@ const TagListPage = (): React.ReactNode => {
 
   const columns: ProColumns<ITag>[] = [
     {
-      title: '标签id',
+      title: '标签ID',
       dataIndex: 'id',
       valueType: 'indexBorder',
       width: 50,
@@ -79,7 +81,9 @@ const TagListPage = (): React.ReactNode => {
             启用
           </Button>
         ),
-        <Button key="edit_btn">编辑</Button>,
+        <Button key="edit_btn" onClick={() => handleEdit(_record)}>
+          编辑
+        </Button>,
         <Popconfirm
           title={`确定删除「${_record?.label}」标签吗？`}
           onConfirm={() => handleRemove(_record?.id)}
@@ -95,13 +99,26 @@ const TagListPage = (): React.ReactNode => {
     },
   ];
 
-  async function handleCreateTag(values: any) {
-    await createTag(values);
-    message.success('创建标签成功');
-    actionRef?.current?.reload();
-    setIsTagModalShow(false);
+  // 更新/保存标签状态
+  async function handleModifyTag(values: any) {
+    if (tag) {
+      const result = await updateTag(values);
+      if (result?.code === CodeMessage['服务器成功返回请求的数据。']) {
+        message.success('更新标签成功');
+        actionRef?.current?.reload();
+        setIsTagModalShow(false);
+      }
+    } else {
+      const result = await createTag(values);
+      if (result?.code === CodeMessage['服务器成功返回请求的数据。']) {
+        message.success('创建标签成功');
+        actionRef?.current?.reload();
+        setIsTagModalShow(false);
+      }
+    }
   }
 
+  // 切换标签状态
   async function handleToggleStatus(_tag: ITag) {
     await updateTag({
       ..._tag,
@@ -111,10 +128,23 @@ const TagListPage = (): React.ReactNode => {
     actionRef?.current?.reload();
   }
 
+  // 更新标签弹窗
+  async function handleEdit(_tag: ITag) {
+    setIsTagModalShow(true);
+    setTag(_tag);
+  }
+
+  // 删除标签
   async function handleRemove(id: number) {
     await removeTag(id);
     actionRef?.current?.reload();
     message.success('删除标签成功');
+  }
+
+  // 关闭标签弹窗
+  async function handleCloseModal() {
+    setIsTagModalShow(false);
+    setTag(undefined);
   }
 
   return (
@@ -136,7 +166,6 @@ const TagListPage = (): React.ReactNode => {
           </Button>,
         ]}
         request={async (params) => {
-          console.log(params);
           const requestParams = {
             pageNo: params?.current,
             pageSize: params?.pageSize,
@@ -154,12 +183,9 @@ const TagListPage = (): React.ReactNode => {
         }}
         postData={(data: any[]) => (data as any).list}
       />
-      <TagModalComponent
-        tag={tag as ITag}
-        visible={isTagModalShow}
-        onOk={handleCreateTag}
-        onCancel={() => setIsTagModalShow(false)}
-      />
+      {isTagModalShow ? (
+        <TagModalComponent tag={tag} onOk={handleModifyTag} onCancel={handleCloseModal} />
+      ) : null}
     </PageContainer>
   );
 };
